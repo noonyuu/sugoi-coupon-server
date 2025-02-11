@@ -10,8 +10,6 @@ app.post("/", async (c) => {
     const body = await c.req.parseBody();
     const file = body.picture as File;
 
-    console.log(body["picture"]);
-
     if (!file) {
       return c.json({ error: "画像が送信されていません。" }, 400);
     }
@@ -64,7 +62,7 @@ app.post("/", async (c) => {
         required: ["store", "usagePeriodStart", "usagePeriodEnd", "discount", "discountType"],
       },
     };
-    
+
     // Gemini APIの呼び出し
     const genAI = new GoogleGenerativeAI((c.env as { GEMINI_API_KEY: string }).GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({
@@ -77,7 +75,12 @@ app.post("/", async (c) => {
     const result = await model.generateContent([question, image]);
     const response = result.response;
 
-    return c.json({ answer: response.text() });
+    const responseText = await response.text();
+    const parsedResponse = JSON.parse(responseText);
+
+    return c.json({ answer: parsedResponse });
+    // テスト用
+    // return c.json({ answer: [{ discount: 50, discountType: 1, store: "セブンイレブン", usagePeriodEnd: "2025年2月16日(日)", usagePeriodStart: "2025年1月13日(月)" }] });
   } catch (error) {
     console.error(error);
     return c.json({ error: "エラーが発生しました" }, 500);
