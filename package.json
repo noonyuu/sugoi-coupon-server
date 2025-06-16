@@ -6,13 +6,20 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
+    "@hono/zod-validator": "^0.7.0",
     "buffer": "^6.0.3",
     "bun-types": "^1.2.2",
-    "hono": "^4.6.20"
+    "dotenv": "^16.5.0",
+    "drizzle-orm": "^0.44.0",
+    "drizzle-zod": "^0.8.2",
+    "hono": "^4.6.20",
+    "zod": "^3.25.41"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250109.0",
     "@types/bun": "^1.2.2",
-    "wrangler": "^3.101.0"
+    "drizzle-kit": "^0.31.1",
+    "tsx": "^4.19.4",
+    "wrangler": "^3.114.9"
   }
 }

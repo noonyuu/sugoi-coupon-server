@@ -1,8 +1,20 @@
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import { Buffer } from "buffer";
 import { Hono } from "hono";
+import { drizzle } from "drizzle-orm/d1";
+import { coupon } from "../../db/schema";
 
-const app = new Hono();
+// const app = new Hono();
+const app = new Hono<{ Bindings: Bindings }>();
+
+type Bindings = {
+  DB: D1Database;
+  GEMINI_API_KEY: string;
+};
+
+app.get("/", (c) => {
+  return c.json({ message: "OCR API is running!" });
+});
 
 // ルートパス
 app.post("/", async (c) => {
@@ -14,7 +26,7 @@ app.post("/", async (c) => {
       return c.json({ error: "画像が送信されていません。" }, 400);
     }
 
-    const question = "この画像からクーポンの利用期間と何円or何割引きかを取得してください\nもし見つけられなければ文字型にはnot found、数値型には0を入れてください";
+    const question = "この画像からクーポンの利用期間と何円or何割引きかを取得してください\nもし見つけられなければ文字型には`なし`、数値型には0を入れてください";
 
     const buffer = await file.arrayBuffer();
     const base64Image = Buffer.from(buffer).toString("base64");
@@ -64,7 +76,7 @@ app.post("/", async (c) => {
     };
 
     // Gemini APIの呼び出し
-    const genAI = new GoogleGenerativeAI((c.env as { GEMINI_API_KEY: string }).GEMINI_API_KEY);
+    const genAI = new GoogleGenerativeAI(c.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({
       model: "gemini-2.0-flash-exp",
       generationConfig: {
@@ -78,13 +90,20 @@ app.post("/", async (c) => {
     const responseText = await response.text();
     const parsedResponse = JSON.parse(responseText);
 
-    return c.json({ answer: parsedResponse });
+    // return c.json({ answer: parsedResponse });
     // テスト用
-    // return c.json({ answer: [{ discount: 50, discountType: 1, store: "セブンイレブン", usagePeriodEnd: "2025年2月16日(日)", usagePeriodStart: "2025年1月13日(月)" }] });
+    return c.json({ answer: [{ discount: 50, discountType: 1, store: "セブンイレブン", usagePeriodEnd: "2025年2月16日(日)", usagePeriodStart: "2025年1月13日(月)" }] });
   } catch (error) {
     console.error(error);
-    return c.json({ error: "エラーが発生しました" }, 500);
+    return c.json({ error: `エラーが発生しました${error}` }, 500);
   }
+});
+
+app.get("/coupon", async (c) => {
+  const db = drizzle(c.env.DB);
+  const allTodos = await db.select().from(coupon).all();
+
+  return c.json(allTodos, 200);
 });
 
 export default app;
