@@ -2,19 +2,19 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "server",
   "main": "src/index.ts",
-  "compatibility_date": "2025-02-09"
+  "compatibility_date": "2025-02-09",
   // "compatibility_flags": [
   //   "nodejs_compat"
   // ],
   // "vars": {
   //   "MY_VAR": "my-variable"
   // },
-  // "kv_namespaces": [
-  //   {
-  //     "binding": "MY_KV_NAMESPACE",
-  //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  //   }
-  // ],
+  "kv_namespaces": [
+    {
+      "binding": "ratelimit",
+      "id": "e5f54fc47e7847528bf86321c08db74f"
+    }
+  ]
   // "r2_buckets": [
   //   {
   //     "binding": "MY_BUCKET",
@@ -23,11 +23,11 @@
   // ],
   // "d1_databases": [
   //   {
-  //     "binding": "MY_DB",
-  //     "database_name": "my-database",
-  //     "database_id": ""
+  //     "binding": "DB",
+  //     "database_name": "sugoi-coupon",
+  //     "database_id": "4cbf0cb6-5bbb-44e7-8e83-9ba2751d9975"
   //   }
-  // ],
+  // ]
   // "ai": {
   //   "binding": "AI"
   // },
