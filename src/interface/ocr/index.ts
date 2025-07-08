@@ -1,14 +1,12 @@
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import { Buffer } from "buffer";
 import { Hono } from "hono";
-import { drizzle } from "drizzle-orm/d1";
-import { coupon } from "../../db/schema";
 
 // const app = new Hono();
 const app = new Hono<{ Bindings: Bindings }>();
 
 type Bindings = {
-  DB: D1Database;
+  ratelimit: KVNamespace;
   GEMINI_API_KEY: string;
 };
 
@@ -99,11 +97,11 @@ app.post("/", async (c) => {
   }
 });
 
-app.get("/coupon", async (c) => {
-  const db = drizzle(c.env.DB);
-  const allTodos = await db.select().from(coupon).all();
+// app.get("/coupon", async (c) => {
+//   const db = drizzle(c.env.DB);
+//   const allTodos = await db.select().from(coupon).all();
 
-  return c.json(allTodos, 200);
-});
+//   return c.json(allTodos, 200);
+// });
 
-export default app;
+// export default app;
